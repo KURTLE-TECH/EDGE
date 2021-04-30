@@ -108,41 +108,51 @@ def readBmp180(addr=DEVICE):
   X1 = (X1 * 3038) >> 16
   X2 = int(-7357 * P) >> 16
   pressure = int(P + ((X1 + X2 + 3791) >> 4))
-  altitude = 44330.0 * (1.0 - pow(pressure/101325.0, (1.0/5.255)))
-  altitude = round(altitude,2)
-  return (temperature/10.0,pressure/100.0,altitude)
+
+  return (temperature/10.0,pressure/100.0)
 
 def readDHT():
-    humidity, temp = Adafruit_DHT.read_retry(11,17)
-    #print('The temperature is: ',temperature,'and the humidity is: ',humidity,'%')
-    #time.sleep(1)
-    return [humidity, temp]
+    try:
+	humidity, temp = Adafruit_DHT.read_retry(11,17)
+    	#print('The temperature is: ',temperature,'and the humidity is: ',humidity,'%')
+    	#time.sleep(1)
+    	return [humidity, temp]
+    except: 
+	return [0,0]
     
 def readcamera():
-    camera = PiCamera()
-    camera.resolution = (256, 256)
-    #camera.framerate(15)
-    camera.start_preview()
-    time.sleep(1)
-    camera.capture('/home/pi/Desktop/Nubius_Pics/image.jpg')
-    camera.stop_preview()
-    with open('/home/pi/Desktop/Nubius_Pics/image.jpg','rb') as img_file:
-        my_string = base64.b64encode(img_file.read())
-        fileContent = img_file.read()
-        bytearr = bytearray(fileContent)
-    return str(my_string)
-    #return bytearr
+    try:
+    	camera = PiCamera()
+    	camera.resolution = (256, 256)
+    	#camera.framerate(15)
+    	camera.start_preview()
+    	time.sleep(1)
+    	camera.capture('/home/pi/Desktop/Nubius_Pics/image.jpg')
+    	camera.stop_preview()
+    	with open('/home/pi/Desktop/Nubius_Pics/image.jpg','rb') as img_file:
+     		my_string = base64.b64encode(img_file.read())
+        	fileContent = img_file.read()
+        	bytearr = bytearray(fileContent)
+    	return str(my_string)
+    except:
+	return 0
 
 def ldr():
-    light = LightSensor(4)
-    return light.value
+    try:
+    	light = LightSensor(4)
+    	return light.value
+    except:
+	return 0
 
 def rainy():
-    rain = InputDevice(18)
-    if not rain.is_active:
-        return 'It is raining'
-    else:
-        return 'Not raining'
+    try:
+    	rain = InputDevice(18)
+    	if not rain.is_active:
+        	return 1
+   	else:
+        	return 0
+    except:
+	return 'err'
 
 def stats():
     
@@ -156,36 +166,37 @@ def on_connect(client, userdata, flags, rc):
     
 def on_message(client, userdata, msg):
     print('message received from '+str(msg.topic)+' : '+str(msg.payload))
-    
-def main():
-    
+
+def main():    
   (ram,cpu) = stats()
   DHTT = readDHT()
   cam = readcamera()
-  (temperature,pressure,altitude)=readBmp180()
+  (temperature,pressure)=readBmp180()
   light = ldr()
   rain = rainy()
   x = str(datetime.datetime.now())
-  f = open('ID.txt','r')
+  f = open('/home/pi/Desktop/edge/ID.txt','r')
   id = f.read()
   f.close()
   
   #payload
-  data = {'ID': id,
+  data = {'Device ID': id,
           'TimeStamp': x,
-          'Light':light,
+          'Light':str(light),
           'Temperature':str(DHTT[1]),
           'Pressure': str(pressure),
           'Humidity': str(DHTT[0]),
-          'Rain' : rain,
-          'picture': cam,
-	  'altitude':altitude}
+          'Rain' : str(rain),
+          'picture': cam}
   stat = {'RAM': str(ram), 'CPU': str(cpu)}
+  for i in data:
+	if data[i] == 'None':
+		stat[str(i)] = 'wiring error'
   print(data)
+  print(pressure)
   data2 = {'rishi':'PESu'}
   print(stat)
   print(sys.getsizeof(cam))
-  print(pressure)
   
   #client config
   client = mqtt.Client("pi")
