@@ -10,10 +10,10 @@ Connect(){
 }
 
 Working(){
-	python /home/pi/Desktop/edge/sync_server.py
+	python /home/pi/Desktop/EDGE/sync_server.py
 	while true
  	do
- 		python /home/pi/Desktop/edge/camqtt_log.py
+ 		python /home/pi/Desktop/EDGE/camqtt_log.py
  		sleep 30
  	done
 }
