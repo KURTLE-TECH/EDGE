@@ -1,7 +1,7 @@
 import requests
 import os
 from json import dumps
-f = open('/home/pi/Desktop/edge/ID.txt','r')
+f = open('/home/pi/Desktop/EDGE/ID.txt','r')
 id = f.read()
 f.close()
 payload = {'Device ID':id}
@@ -13,7 +13,7 @@ date = data['date']
 time = data['time']
 
 if 'id' in data.keys():
-	f = open('/home/pi/Desktop/edge/ID.txt','w')
+	f = open('/home/pi/Desktop/EDGE/ID.txt','w')
 	uid = data['id']
 	f.write(uid)
 	f.close()
