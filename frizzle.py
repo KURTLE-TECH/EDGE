@@ -199,7 +199,7 @@ def main():
   light = ldr()
   rain = rainy()
   x = str(datetime.datetime.now())
-  f = open('/home/pi/Desktop/edge/ID.txt','r')
+  f = open('/home/pi/Desktop/EDGE/ID.txt','r')
   id = f.read()
   f.close()
   

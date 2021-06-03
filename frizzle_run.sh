@@ -10,10 +10,10 @@ Connect(){
 }
 
 Working(){
-	python /home/pi/Desktop/edge/sync_id.py
+	python /home/pi/Desktop/EDGE/sync_id.py
 	while true
  	do
- 		python /home/pi/Desktop/edge/frizzle.py
+ 		python /home/pi/Desktop/EDGE/frizzle.py
  		sleep 30
  	done
 }
