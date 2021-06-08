@@ -15,7 +15,7 @@ from gpiozero import LightSensor, InputDevice
 import gpiozero
 
 #logs for log data
-logs = dict()
+logs = {'bmp180':'OK','DHT':'OK','camera':'OK','ldr':'OK','Rain':'OK' }
 
 MQTT_server = '13.126.242.56'
 MQTT_path1 = "Frizzle/Sensor_Data"
@@ -231,7 +231,7 @@ def main():
   client.publish(MQTT_path1,str(data))
   publish.single(MQTT_path1, str(data),hostname=MQTT_server, auth={'username':"frizzle_test",'password':"FRIZZLE"} )
   #client.publish(MQTT_path2, str(stat))
-  publish.single(MQTT_path2, str(stat),hostname=MQTT_server, auth={'username':"frizzle_test",'password':"FRIZZLE"})
+  #publish.single(MQTT_path2, str(stat),hostname=MQTT_server, auth={'username':"frizzle_test",'password':"FRIZZLE"})
   #client.publish(MQTT_path2,str(logs))
   #client.loop_forever()
   #client.disconnect()
