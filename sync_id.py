@@ -5,7 +5,7 @@ f = open('/home/pi/Desktop/EDGE/ID.txt','r')
 id = f.read()
 f.close()
 payload = {'Device ID':id}
-r = requests.post('http://13.126.242.56:80/register_node',data=dumps(payload))
+r = requests.post('http://api.frizzleweather.com/register_node',data=dumps(payload))
 
 data = r.json()
 print(data)

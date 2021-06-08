@@ -10,6 +10,7 @@ Connect(){
 }
 
 Working(){
+	python /home/pi/Desktop/EDGE/create_id.py
 	python /home/pi/Desktop/EDGE/sync_id.py
 	while true
  	do
