@@ -13,6 +13,7 @@ import psutil
 import datetime
 from gpiozero import LightSensor, InputDevice
 import gpiozero
+from meteocalc import Temp, dew_point, heat_index, wind_chill, feels_like
 
 #logs for log data
 logs = {'bmp180':'OK','DHT':'OK','camera':'OK','ldr':'OK','Rain':'OK' }
@@ -129,7 +130,19 @@ def readDHT():
     	return [humidity, temp]
     except: 
 	return ['None', 'None']
-    
+
+def dew(tempe,hum):
+	#T_f = (temp * 1.8) + 32
+	t = Temp(tempe,'c')
+	dp = dew_point(temperature=t, humidity = hum)
+	return dp.c
+
+def heatindex(tempe,humi):
+	T_f = (tempe * 1.8) + 32
+	t2 = Temp(T_f,'f')
+	hi = heat_index(temperature=t2, humidity = humi)
+	return hi.c
+
 def readcamera():
 
     try:
@@ -194,6 +207,8 @@ def on_message(client, userdata, msg):
 def main():    
   (ram,cpu) = stats()
   DHTT = readDHT()
+  dewp = dew(DHTT[1],DHTT[0])
+  heati = heatindex(DHTT[1],DHTT[0]) 
   cam = readcamera()
   (temperature,pressure)=readBmp180()
   light = ldr()
@@ -210,6 +225,8 @@ def main():
           'Temperature':str(DHTT[1]),
           'Pressure': str(pressure),
           'Humidity': str(DHTT[0]),
+	  'Dew Point': dewp,
+	  'Heat Index':heati, 
           'Rain' : str(rain),
           'picture': cam}
   stat = {'RAM': str(ram), 'CPU': str(cpu)}
