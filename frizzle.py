@@ -181,11 +181,12 @@ def ldr():
 
 def rainy():
     try:
-    	rain = InputDevice(18)
+    	rain = LightSensor(18)
     	if not rain.is_active:
 		raise gpiozero.GPIOZeroError
-   	else:
-        	return 0
+	
+	return 1 - rain.value
+	rain.close()
 
     except gpiozero.GPIOZeroError:
 	logs['Rain'] = 'Rain sensor not connected'
