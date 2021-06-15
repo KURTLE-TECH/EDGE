@@ -5,16 +5,16 @@ f = open('/home/pi/Desktop/EDGE/ID.txt','r')
 id = f.read()
 f.close()
 payload = {'Device ID':id}
-r = requests.post('http://api.frizzleweather.com/register_node',data=dumps(payload))
+r = requests.post('http://api.frizzleweather.com/node/initialise',data=dumps(payload))
 
 data = r.json()
 print(data)
 date = data['date']
 time = data['time']
 
-if 'id' in data.keys():
+if 'Device ID' in data.keys():
 	f = open('/home/pi/Desktop/EDGE/ID.txt','w')
-	uid = data['id']
+	uid = data['Device ID']
 	f.write(uid)
 	f.close()
 os.system('sudo timedatectl set-ntp false')

@@ -23,7 +23,7 @@ Working(){
 
 
 #/sbin/ifconfig ppp0
-path=$(curl -X GET "http://13.126.242.56:80")
+path=$(curl -X GET "http://13.126.242.56:80/node/server/status")
 echo $path
 if [ -z "$path" ]; 
 then
