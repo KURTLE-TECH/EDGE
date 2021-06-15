@@ -182,10 +182,13 @@ def ldr():
 def rainy():
     try:
     	rain = LightSensor(18)
+	with open('/home/pi/Desktop/EDGE/rain.txt','r') as f:
+		a = f.read()
+		b = float(a)
     	if not rain.is_active:
 		raise gpiozero.GPIOZeroError
 	
-	return 1 - rain.value
+	return abs((1 - rain.value) - b)
 	rain.close()
 
     except gpiozero.GPIOZeroError:
@@ -226,8 +229,8 @@ def main():
           'Temperature':str(DHTT[1]),
           'Pressure': str(pressure),
           'Humidity': str(DHTT[0]),
-	  'Dew Point': dewp,
-	  'Heat Index':heati, 
+	  'Dew Point': str(dewp),
+	  'Heat Index':str(heati), 
           'Rain' : str(rain),
           'picture': cam}
   stat = {'RAM': str(ram), 'CPU': str(cpu)}
