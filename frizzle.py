@@ -1,4 +1,6 @@
-
+import spidev
+import Adafruit_GPIO.SPI as SPI
+import Adafruit_MCP3008
 import paho.mqtt.client as mqtt
 import paho.mqtt.publish as publish
 import smbus
@@ -15,8 +17,17 @@ from gpiozero import LightSensor, InputDevice
 import gpiozero
 from meteocalc import Temp, dew_point, heat_index, wind_chill, feels_like
 
+CLK = 11
+MISO = 9
+MOSI = 10
+CS = 8
+
+mcp = Adafruit_MCP3008.MCP3008(clk = CLK, cs = CS, miso = MISO, mosi = MOSI)
+
+
 #logs for log data
 logs = {'bmp180':'OK','DHT':'OK','camera':'OK','ldr':'OK','Rain':'OK' }
+
 
 MQTT_server = '13.126.242.56'
 MQTT_path1 = "Frizzle/Sensor_Data"
@@ -25,6 +36,15 @@ DEVICE  = 0x77
  
 
 bus = smbus.SMBus(1) 
+light_channel = 0
+rain_channel = 1
+
+def ReadChannel(channel):
+	values = [0]*8
+	for i in range(8):
+		values[i] = mcp.read_adc(i)
+	return values[channel]
+
  
 def convertToString(data):
   # Simple function to convert binary data into
@@ -169,30 +189,35 @@ def readcamera():
 
 def ldr():
     try:
-    	light = LightSensor(4)
-	if not light.is_active:
-		raise gpiozero.GPIOZeroError
 
-    	return light.value
+	light_level = ReadChannel(light_channel)
+	return 1024 - light_level
+    	#light = LightSensor(4)
+	#if not light.is_active:
+	#	raise gpiozero.GPIOZeroError
 
-    except gpiozero.GPIOZeroError:
-	logs['ldr'] = 'falulty ldr circuit'
+    	#return light.value
+
+    except Exception as e:
+	logs['ldr'] = str(e)
 	return 'None'
 
 def rainy():
     try:
-    	rain = LightSensor(18)
-	with open('/home/pi/Desktop/EDGE/rain.txt','r') as f:
-		a = f.read()
-		b = float(a)
-    	if not rain.is_active:
-		raise gpiozero.GPIOZeroError
+	rain_level = ReadChannel(rain_channel)
+	return 1024-rain_level
+    	#rain = LightSensor(18)
+	#with open('/home/pi/Desktop/EDGE/rain.txt','r') as f:
+	#	a = f.read()
+	#	b = float(a)
+    	#if not rain.is_active:
+	#	raise gpiozero.GPIOZeroError
 	
-	return abs((1 - rain.value) - b)
-	rain.close()
+	#return abs((1 - rain.value) - b)
+	#rain.close()
 
-    except gpiozero.GPIOZeroError:
-	logs['Rain'] = 'Rain sensor not connected'
+    except Exception as e:
+	logs['Rain'] = str(e)
 	return 'None' 
 
 def stats():

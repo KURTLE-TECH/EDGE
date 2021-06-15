@@ -13,7 +13,6 @@ Working(){
 	python /home/pi/Desktop/EDGE/create_id.py
 	sleep 1m
 	python /home/pi/Desktop/EDGE/sync_id.py
-	python /home/pi/Desktop/EDGE/rain.py
 	while true
  	do
  		python /home/pi/Desktop/EDGE/frizzle.py
