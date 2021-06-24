@@ -10,8 +10,6 @@ Connect(){
 }
 
 Working(){
-	python /home/pi/Desktop/EDGE/create_id.py
-	sleep 1m
 	python /home/pi/Desktop/EDGE/sync_id.py
 	while true
  	do
@@ -22,7 +20,7 @@ Working(){
 
 
 #/sbin/ifconfig ppp0
-path=$(curl -X GET "http://13.126.242.56:80/node/server/status")
+path=$(curl -k -X GET "https://api.frizzleweather.com/node/server/status")
 echo $path
 if [ -z "$path" ]; 
 then

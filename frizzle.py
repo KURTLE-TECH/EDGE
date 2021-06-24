@@ -257,13 +257,17 @@ def main():
 	  'Dew Point': str(dewp),
 	  'Heat Index':str(heati), 
           'Rain' : str(rain),
-          'picture': cam}
-  stat = {'RAM': str(ram), 'CPU': str(cpu)}
+          'picture': cam,
+          'Logs':{'BMP_logs':logs['bmp180'],'DHT_logs':logs['DHT'],'CAMERA_logs':logs['camera'],'LDR_logs':logs['ldr'],'RAIN_logs':logs['Rain'],'RAM': str(ram), 'CPU': str(cpu)}}
+  #logs = {'bmp180':'OK','DHT':'OK','camera':'OK','ldr':'OK','Rain':'OK', 'RAM': str(ram),'CPU':str(cpu) }
+  #logs['RAM'] = str(ram)
+  #logs['CPU'] = str(cpu)
+  #stat = {'RAM': str(ram), 'CPU': str(cpu)}
   
   #for reference
   print(data)
-  print(stat)
-  print(logs)
+  #print(stat)
+  #print(logs)
   #print(sys.getsizeof(cam))
   
   #client config
@@ -276,6 +280,11 @@ def main():
   client.connect(MQTT_server,1883)
   client.publish(MQTT_path1,str(data))
   publish.single(MQTT_path1, str(data),hostname=MQTT_server, auth={'username':"frizzle_test",'password':"FRIZZLE"} )
+  #client.publish(MQTT_path2,str(logs))
+  #publish.single(MQTT_path2, str(logs),hostname=MQTT_server, auth={'username':"frizzle_test",'password':"FRIZZLE"} )
+  #msgs = [{'topic':MQTT_path1,'payload':str(data)},(MQTT_path2, str(logs),0,False)]
+  
+  #publish.multiple(msgs, hostname=MQTT_server, auth={'username':"frizzle_test",'password':"FRIZZLE"} )
   #client.publish(MQTT_path2, str(stat))
   #publish.single(MQTT_path2, str(stat),hostname=MQTT_server, auth={'username':"frizzle_test",'password':"FRIZZLE"})
   #client.publish(MQTT_path2,str(logs))
