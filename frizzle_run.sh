@@ -20,6 +20,8 @@ Working(){
 
 
 #/sbin/ifconfig ppp0
+echo configuring network
+sleep 2m
 path=$(curl -k -X GET "https://api.frizzleweather.com/node/server/status")
 echo $path
 if [ -z "$path" ]; 
