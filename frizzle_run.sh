@@ -26,10 +26,12 @@ path=$(curl -k -X GET "https://api.frizzleweather.com/node/server/status")
 echo $path
 if [ -z "$path" ]; 
 then
+	suso systemctl start watchdog
 	echo not connected
 	Connect
 	Working
 else
+	sudo systemctl start watchdog
 	echo connected
 	Working
 fi

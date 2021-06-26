@@ -36,7 +36,7 @@ DEVICE  = 0x77
  
 
 bus = smbus.SMBus(1) 
-light_channel = 0
+light_channel = 7
 rain_channel = 1
 
 def ReadChannel(channel):
