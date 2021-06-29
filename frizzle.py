@@ -16,7 +16,7 @@ import datetime
 from gpiozero import LightSensor, InputDevice
 import gpiozero
 from meteocalc import Temp, dew_point, heat_index, wind_chill, feels_like
-
+import logging
 CLK = 11
 MISO = 9
 MOSI = 10
@@ -31,7 +31,10 @@ logs = {'bmp180':'OK','DHT':'OK','camera':'OK','ldr':'OK','Rain':'OK' }
 
 MQTT_server = '13.126.242.56'
 MQTT_path1 = "Frizzle/Sensor_Data"
-MQTT_path2 = "Frizzle/Edge_logs" 
+MQTT_path2 = "Frizzle/Edge_logs"
+logging.basicConfig(filename='frizzle_sensor.log', filemode="a", level=logging.INFO,format="%(levelname)s %(asctime)s : %(message)s")
+logger = logging.getLogger("sensor_logger")
+logger.setLevel(logging.INFO) 
 DEVICE  = 0x77 
  
 
@@ -133,10 +136,11 @@ def readBmp180(addr=DEVICE):
   	X1 = (X1 * 3038) >> 16
   	X2 = int(-7357 * P) >> 16
   	pressure = int(P + ((X1 + X2 + 3791) >> 4))
-
+	logger.info("BMP Values temp: %s, pressure: %s "%(str(temperature/10.0),str(pressure/100.0)))
   	return (temperature/10.0,pressure/100.0)
  
   except IOError, e:
+	logger.error("BMP IOError")
 	logs['bmp180'] = 'bmp not connected: ' + str(e) 
 	return (None, None)
 
@@ -145,9 +149,13 @@ def readDHT():
 	humidity, temp = Adafruit_DHT.read_retry(11,17)
     	#print('The temperature is: ',temperature,'and the humidity is: ',humidity,'%')
     	#time.sleep(1)
+	
+	
 	if [humidity, temp] == [None, None]:
+		logger.error("DHT sensor no output")
 		logs['DHT'] = 'dht11 not connected'
-    	return [humidity, temp]
+    	logger.info("DHT Values: humidity %s", temp: %s"%(str(humidity),str(temp)))
+	return [humidity, temp]
     except: 
 	return ['None', 'None']
 
@@ -155,12 +163,14 @@ def dew(tempe,hum):
 	#T_f = (temp * 1.8) + 32
 	t = Temp(tempe,'c')
 	dp = dew_point(temperature=t, humidity = hum)
+	logger.info("Dew values %s"%(str(dp.c)))
 	return dp.c
 
 def heatindex(tempe,humi):
 	T_f = (tempe * 1.8) + 32
 	t2 = Temp(T_f,'f')
 	hi = heat_index(temperature=t2, humidity = humi)
+	logger.info("Heat Index Value: %s" % (str(hi.c)))
 	return hi.c
 
 def readcamera():
@@ -173,24 +183,29 @@ def readcamera():
     	camera.resolution = (256, 256)
     	camera.start_preview()
     	time.sleep(1)
+	logger.info("Starting camera read")
     	camera.capture('/home/pi/Desktop/Nubius_Pics/image.jpg')
     	camera.stop_preview()
     	with open('/home/pi/Desktop/Nubius_Pics/image.jpg','rb') as img_file:
      		my_string = base64.b64encode(img_file.read())
-
+	logger.info("Finished camera read")
     	return str(my_string)
 
     except picamera.exc.PiCameraMMALError as e:
+		 
 	if e.status == 1:
+		logger.error("Camera error: Status: %s Summary: %s",% (str(e.status),'camera not connected or bad config on pi')
 		logs['camera'] = {'message' : str(e), 'summary': 'camera not connected or bad config on pi'}
 	if e.status == 2:
+		logger.error("Camera error: Status: %s Summary: %s ", %(str(e.status),'bad camera hardware or being used by 2 processes')
 		logs['camera'] = {'message': str(e), 'summary': 'bad camera hardware or being used by 2 processes'}
 	return 'None'
 
 def ldr():
     try:
-
+		
 	light_level = ReadChannel(light_channel)
+	logger.info("LDR light level: %s"%(str(1024-light_level)))
 	return 1024 - light_level
     	#light = LightSensor(4)
 	#if not light.is_active:
@@ -199,12 +214,14 @@ def ldr():
     	#return light.value
 
     except Exception as e:
+	logger.error("LDR error: %s"%(str(e)))	
 	logs['ldr'] = str(e)
 	return 'None'
 
 def rainy():
     try:
 	rain_level = ReadChannel(rain_channel)
+	logger.info("LDR light level: %s"%(str(1024-rain_level)))
 	return 1024-rain_level
     	#rain = LightSensor(18)
 	#with open('/home/pi/Desktop/EDGE/rain.txt','r') as f:
