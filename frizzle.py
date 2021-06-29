@@ -32,7 +32,7 @@ logs = {'bmp180':'OK','DHT':'OK','camera':'OK','ldr':'OK','Rain':'OK' }
 MQTT_server = '13.126.242.56'
 MQTT_path1 = "Frizzle/Sensor_Data"
 MQTT_path2 = "Frizzle/Edge_logs"
-logging.basicConfig(filename='frizzle_sensor.log', filemode="a", level=logging.INFO,format="%(levelname)s %(asctime)s : %(message)s")
+logging.basicConfig(filename='/home/pi/Desktop/frizzle_sensor.log', filemode="a", level=logging.INFO,format="%(levelname)s %(asctime)s : %(message)s")
 logger = logging.getLogger("sensor_logger")
 logger.setLevel(logging.INFO) 
 DEVICE  = 0x77 
@@ -154,7 +154,7 @@ def readDHT():
 	if [humidity, temp] == [None, None]:
 		logger.error("DHT sensor no output")
 		logs['DHT'] = 'dht11 not connected'
-    	logger.info("DHT Values: humidity %s", temp: %s"%(str(humidity),str(temp)))
+    	logger.info("DHT Values: humidity %s, temp: %s"%(str(humidity),str(temp)))
 	return [humidity, temp]
     except: 
 	return ['None', 'None']
@@ -194,10 +194,10 @@ def readcamera():
     except picamera.exc.PiCameraMMALError as e:
 		 
 	if e.status == 1:
-		logger.error("Camera error: Status: %s Summary: %s",% (str(e.status),'camera not connected or bad config on pi')
+		logger.error("Camera error: Status: {status} Summary: {reason}".format(status = str(e.status), reason = 'camera not connected or bad config on pi'))
 		logs['camera'] = {'message' : str(e), 'summary': 'camera not connected or bad config on pi'}
 	if e.status == 2:
-		logger.error("Camera error: Status: %s Summary: %s ", %(str(e.status),'bad camera hardware or being used by 2 processes')
+		logger.error("Camera error: Status: {status} Summary: {reason} ".format(status = str(e.status),reason = 'bad camera hardware or being used by 2 processes'))
 		logs['camera'] = {'message': str(e), 'summary': 'bad camera hardware or being used by 2 processes'}
 	return 'None'
 
@@ -221,7 +221,7 @@ def ldr():
 def rainy():
     try:
 	rain_level = ReadChannel(rain_channel)
-	logger.info("LDR light level: %s"%(str(1024-rain_level)))
+	logger.info("Rain level: %s"%(str(1024-rain_level)))
 	return 1024-rain_level
     	#rain = LightSensor(18)
 	#with open('/home/pi/Desktop/EDGE/rain.txt','r') as f:
