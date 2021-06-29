@@ -262,6 +262,9 @@ def main():
   heati = heatindex(DHTT[1],DHTT[0]) 
   cam = readcamera()
   (temperature,pressure)=readBmp180()
+  tempe = (float(DHTT[1])+float(temperature))/2
+  dewp = dew(tempe,DHTT[0])
+  heati = heatindex(tempe,DHTT[0])
   light = ldr()
   rain = rainy()
   x = str(datetime.datetime.now())
@@ -273,7 +276,7 @@ def main():
   data = {'Device ID': id,
           'TimeStamp': x,
           'Light':str(light),
-          'Temperature':str(DHTT[1]),
+          'Temperature':str(tempe),
           'Pressure': str(pressure),
           'Humidity': str(DHTT[0]),
 	  'Dew Point': str(dewp),
