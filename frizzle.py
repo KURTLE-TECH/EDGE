@@ -12,6 +12,7 @@ import Adafruit_DHT
 from picamera import PiCamera, mmalobj
 import picamera
 import psutil
+from psutil._common import bytes2human
 import datetime
 from gpiozero import LightSensor, InputDevice
 import gpiozero
@@ -240,9 +241,13 @@ def rainy():
 def stats():
     
     ram = psutil.virtual_memory()
+    ram_total = bytes2human(ram.total)
+    ram_used = bytes2human(ram.used) 
+    ram_percent = str(bytes2human(ram.percent))
+    #total = ram.total >> 30
     cpu = psutil.cpu_percent()
     
-    return ram, cpu
+    return ram_total, ram_used, ram_percent.rstrip(ram_percent[-1]), cpu
 
 def on_connect(client, userdata, flags, rc):
     print("connected with code "+str(rc))
@@ -251,7 +256,7 @@ def on_message(client, userdata, msg):
     print('message received from '+str(msg.topic)+' : '+str(msg.payload))
 
 def main():    
-  (ram,cpu) = stats()
+  (ram_tot,ram_use,perc,cpu) = stats()
   DHTT = readDHT()
   dewp = dew(DHTT[1],DHTT[0])
   heati = heatindex(DHTT[1],DHTT[0]) 
@@ -275,7 +280,7 @@ def main():
 	  'Heat Index':str(heati), 
           'Rain' : str(rain),
           'picture': cam,
-          'Logs':{'BMP_logs':logs['bmp180'],'DHT_logs':logs['DHT'],'CAMERA_logs':logs['camera'],'LDR_logs':logs['ldr'],'RAIN_logs':logs['Rain'],'RAM': str(ram), 'CPU': str(cpu)}}
+          'Logs':{'BMP_logs':logs['bmp180'],'DHT_logs':logs['DHT'],'CAMERA_logs':logs['camera'],'LDR_logs':logs['ldr'],'RAIN_logs':logs['Rain'],'TOTAL RAM': str(ram_tot),'USED RAM':str(ram_use),'Percentage':perc, 'CPU': str(cpu)}}
   #logs = {'bmp180':'OK','DHT':'OK','camera':'OK','ldr':'OK','Rain':'OK', 'RAM': str(ram),'CPU':str(cpu) }
   #logs['RAM'] = str(ram)
   #logs['CPU'] = str(cpu)

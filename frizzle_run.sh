@@ -14,7 +14,7 @@ Working(){
 	while true
  	do
  		python /home/pi/Desktop/EDGE/frizzle.py
- 		sleep 30
+ 		sleep 5m
  	done
 }
 
@@ -26,7 +26,7 @@ path=$(curl -k -X GET "https://api.frizzleweather.com/node/server/status")
 echo $path
 if [ -z "$path" ]; 
 then
-	suso systemctl start watchdog
+	sudo systemctl start watchdog
 	echo not connected
 	Connect
 	Working
