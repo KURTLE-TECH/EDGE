@@ -1,3 +1,3 @@
 #!/bin/sh
 
-> /home/pi/Desktop/tet.txt
+> /home/pi/Desktop/frizzle_sensor.log
