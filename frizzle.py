@@ -1,3 +1,4 @@
+import socket
 import spidev
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
@@ -28,9 +29,15 @@ mcp = Adafruit_MCP3008.MCP3008(clk = CLK, cs = CS, miso = MISO, mosi = MOSI)
 
 #logs for log data
 logs = {'bmp180':'OK','DHT':'OK','camera':'OK','ldr':'OK','Rain':'OK' }
-
+s=socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.connect(("8.8.8.8",80))
+ip = s.getsockname()[0]
+s.close()
+hostname = socket.gethostname()
+ip_address = socket.gethostbyname(hostname)
 
 MQTT_server = '13.126.242.56'
+MQTT_server= 'api.frizzleweather.com'
 MQTT_path1 = "Frizzle/Sensor_Data"
 MQTT_path2 = "Frizzle/Edge_logs"
 logging.basicConfig(filename='/home/pi/Desktop/frizzle_sensor.log', filemode="a", level=logging.INFO,format="%(levelname)s %(asctime)s : %(message)s")
@@ -274,6 +281,7 @@ def main():
   
   #payload
   data = {'Device ID': id,
+	  'IP ADDRESS':ip,
           'TimeStamp': x,
           'Light':str(light),
           'Temperature':str(tempe),

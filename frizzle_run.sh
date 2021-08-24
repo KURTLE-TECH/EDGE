@@ -11,11 +11,7 @@ Connect(){
 
 Working(){
 	python /home/pi/Desktop/EDGE/sync_id.py
-	while true
- 	do
- 		python /home/pi/Desktop/EDGE/frizzle.py
- 		sleep 5m
- 	done
+ 	python /home/pi/Desktop/EDGE/frizzle.py
 }
 
 
@@ -26,12 +22,18 @@ path=$(curl -k -X GET "https://api.frizzleweather.com/node/server/status")
 echo $path
 if [ -z "$path" ]; 
 then
-	sudo systemctl start watchdog
 	echo not connected
 	Connect
 	Working
+	sleep 1m
+	sudo poff rnet
+	sleep 1m
+	sudo reboot
 else
-	sudo systemctl start watchdog
 	echo connected
 	Working
+	sleep 1m
+	sudo poff rnet
+	sleep 1m
+	sudo reboot
 fi
